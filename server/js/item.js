@@ -1,5 +1,4 @@
-
-module.exports = Item = Entity.extend({
+export default Item = Entity.extend({
     init: function(id, kind, x, y) {
         this._super(id, "item", kind, x, y);
         this.isStatic = false;
