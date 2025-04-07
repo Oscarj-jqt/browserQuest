@@ -12,18 +12,16 @@ module.exports = Map = cls.Class.extend({
     
     	this.isLoaded = false;
     
-    	path.exists(filepath, function(exists) {
-            if(!exists) {
-                log.error(filepath + " doesn't exist.");
-                return;
-            }
-        
-            fs.readFile(filepath, function(err, file) {
-                var json = JSON.parse(file.toString());
-            
-                self.initMap(json);
+    	fs.promises.access(filepath, fs.constants.F_OK)
+            .then(() => {
+                fs.readFile(filepath, function(err, file) {
+                    var json = JSON.parse(file.toString());
+                    self.initMap(json);
+                });
+            })
+            .catch(() => {
+                console.error(filepath + " doesn't exist.");
             });
-        });
     },
 
     initMap: function(map) {
@@ -84,7 +82,7 @@ module.exports = Map = cls.Class.extend({
             for(var	j, i = 0; i < this.height; i++) {
                 this.grid[i] = [];
                 for(j = 0; j < this.width; j++) {
-                    if(_.include(this.collisions, tileIndex)) {
+                    if (_.includes(this.collisions, tileIndex)) {
                         this.grid[i][j] = 1;
                     } else {
                         this.grid[i][j] = 0;
@@ -214,5 +212,5 @@ var pos = function(x, y) {
 };
 
 var equalPositions = function(pos1, pos2) {
-    return pos1.x === pos2.x && pos2.y === pos2.y;
+    return pos1.x === pos2.x && pos1.y === pos2.y;
 };
