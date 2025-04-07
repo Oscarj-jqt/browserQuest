@@ -35,7 +35,7 @@ var Server = cls.Class.extend({
     },
     
     forEachConnection: function(callback) {
-        _.each(this._connections, callback);
+        Object.values(this._connections).forEach(callback);
     },
     
     addConnection: function(connection) {
@@ -80,7 +80,7 @@ var Connection = cls.Class.extend({
     },
     
     close: function(logError) {
-        log.info("Closing connection to "+this._connection.remoteAddress+". Error: "+logError);
+        console.log("Closing connection to "+this._connection.remoteAddress+". Error: "+logError);
         this._connection.close();
     }
 });
@@ -132,11 +132,12 @@ WS.MultiVersionWebsocketServer = Server.extend({
             response.end();
         });
         this._httpServer.listen(port, function() {
-            log.info("Server is listening on port "+port);
+            console.log("Server is listening on port "+port);
+
         });
         
-        this._miksagoServer = wsserver.createServer();
-        this._miksagoServer.server = this._httpServer;
+        const WebSocketServer = require('ws').Server;
+        this._miksagoServer = new WebSocketServer({ server: this._httpServer });
         this._miksagoServer.addListener('connection', function(connection) {
             // Add remoteAddress property
             connection.remoteAddress = connection._socket.remoteAddress;
@@ -181,8 +182,9 @@ WS.MultiVersionWebsocketServer = Server.extend({
     },
     
     _createId: function() {
-        return '5' + Utils.random(99) + '' + (this._counter++);
-    },
+        return '5' + Date.now() + '' + (this._counter++);
+    }
+    ,
     
     broadcast: function(message) {
         this.forEachConnection(function(connection) {
@@ -207,24 +209,22 @@ WS.worlizeWebSocketConnection = Connection.extend({
         this._super(id, connection, server);
         
         this._connection.on('message', function(message) {
-            if(self.listen_callback) {
-                if(message.type === 'utf8') {
-                    if(useBison) {
+            if (message && message.utf8Data) {
+                if(self.listen_callback) {
+                    if (useBison) {
                         self.listen_callback(BISON.decode(message.utf8Data));
                     } else {
                         try {
                             self.listen_callback(JSON.parse(message.utf8Data));
-                        } catch(e) {
-                            if(e instanceof SyntaxError) {
-                                self.close("Received message was not valid JSON.");
-                            } else {
-                                throw e;
-                            }
+                        } catch (e) {
+                            console.error("Invalid JSON message:", message.utf8Data);
+                            self.close("Received message was not valid JSON.");
                         }
                     }
                 }
             }
         });
+        
         
         this._connection.on('close', function(connection) {
             if(self.close_callback) {
