@@ -1,5 +1,5 @@
-import { readFile } from 'fs';
-import Metrics from './metrics';
+const { readFile } = require('fs');
+const { metrics } = require('./metrics');
 
 
 function main(config) {
@@ -8,7 +8,7 @@ function main(config) {
         Log = require('log'),
         _ = require('underscore'),
         server = new WebSocket.Server({ port: config.port }), 
-        metrics = config.metrics_enabled ? new Metrics(config) : null,
+        metrics = config.metrics_enabled ? new metrics(config) : null,
         worlds = [],
         lastTotalPlayers = 0;
 

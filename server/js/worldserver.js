@@ -60,7 +60,7 @@ module.exports = World = cls.Class.extend({
         });
         
         this.onPlayerEnter(function(player) {
-            log.info(player.name + " has joined "+ self.id);
+            console.log(player.name + " has joined "+ self.id);
             
             if(!player.hasEnteredGame) {
                 self.incrementPlayerCount();
@@ -109,7 +109,7 @@ module.exports = World = cls.Class.extend({
             });
     
             player.onExit(function() {
-                log.info(player.name + " has left the game.");
+                console.log(player.name + " has left the game.");
                 self.removePlayer(player);
                 self.decrementPlayerCount();
                 
@@ -202,7 +202,7 @@ module.exports = World = cls.Class.extend({
             }
         }, 1000 / this.ups);
         
-        log.info(""+this.id+" created (capacity: "+this.maxPlayers+" players).");
+        console.log(""+this.id+" created (capacity: "+this.maxPlayers+" players).");
     },
     
     setUpdatesPerSecond: function(ups) {
@@ -263,7 +263,7 @@ module.exports = World = cls.Class.extend({
         if(player && player.id in this.outgoingQueues) {
             this.outgoingQueues[player.id].push(message.serialize());
         } else {
-            log.error("pushToPlayer: player was undefined");
+            console.error("pushToPlayer: player was undefined");
         }
     },
     
@@ -278,7 +278,7 @@ module.exports = World = cls.Class.extend({
                 }
             });
         } else {
-            log.error("groupId: "+groupId+" is not a valid group");
+            console.error("groupId: "+groupId+" is not a valid group");
         }
     },
     
@@ -352,7 +352,7 @@ module.exports = World = cls.Class.extend({
         this.players[player.id] = player;
         this.outgoingQueues[player.id] = [];
         
-        //log.info("Added player : " + player.id);
+        //console.log("Added player : " + player.id);
     },
     
     removePlayer: function(player) {
@@ -500,7 +500,7 @@ module.exports = World = cls.Class.extend({
         if(id in this.entities) {
             return this.entities[id];
         } else {
-            log.error("Unknown entity : " + id);
+            console.error("Unknown entity : " + id);
         }
     },
     
