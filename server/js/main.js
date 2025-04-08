@@ -64,10 +64,12 @@ function main(config) {
     });
 
     const onPopulationChange = () => {
+        console.log("Population change triggered");
         metricsInstance.updatePlayerCounters(worlds, (totalPlayers) => {
             _.each(worlds, (world) => {
                 if (world.playerCount !== totalPlayers) {
                     world.updatePopulation(totalPlayers);
+                    console.log(totalPlayers);
                 }
             });
         });
@@ -75,14 +77,23 @@ function main(config) {
     };
 
     _.each(_.range(config.nb_worlds), (i) => {
-        const world = new WorldServer('world' + (i + 1), config.nb_players_per_world, server);
+        if (worlds.length >= config.nb_worlds) {
+            console.log("All worlds already created.");
+            return;
+        }
+    
+        const worldName = 'world' + (i + 1);
+        const world = new WorldServer(worldName, config.nb_players_per_world, server);
         world.run(config.map_filepath);
         worlds.push(world);
+            
         if (metricsInstance) {
             world.onPlayerAdded(onPopulationChange);
             world.onPlayerRemoved(onPopulationChange);
         }
     });
+    
+    
 
 
     if (config.metrics_enabled) {

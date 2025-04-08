@@ -1,4 +1,3 @@
-
 const cls = require("./lib/class");
 const _ = require("underscore");
 const Log = require('log');
@@ -222,10 +221,12 @@ module.exports = World = cls.Class.extend({
     },
     
     onPlayerAdded: function(callback) {
+        console.log("Setting player added callback");
         this.added_callback = callback;
     },
     
     onPlayerRemoved: function(callback) {
+        console.log("Setting player removed callback");
         this.removed_callback = callback;
     },
     
@@ -348,18 +349,25 @@ module.exports = World = cls.Class.extend({
     },
     
     addPlayer: function(player) {
+        console.log("Adding player: " + player.id);
+
         this.addEntity(player);
         this.players[player.id] = player;
         this.outgoingQueues[player.id] = [];
-        
+
         console.log("Added player : " + player.id);
     },
     
     removePlayer: function(player) {
+        console.log("Removing player: " + player.id);
+
         player.broadcast(player.despawn());
         this.removeEntity(player);
         delete this.players[player.id];
         delete this.outgoingQueues[player.id];
+
+        console.log("Removed player: " + player.id);
+
     },
     
     addMob: function(mob) {
@@ -848,6 +856,7 @@ module.exports = World = cls.Class.extend({
     },
     
     updatePopulation: function(totalPlayers) {
+        console.log('Updating population: ', this.playerCount, ' Total Players: ', totalPlayers);
         this.pushBroadcast(new Messages.Population(this.playerCount, totalPlayers ? totalPlayers : this.playerCount));
     }
 });

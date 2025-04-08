@@ -1,4 +1,3 @@
-
 const cls = require("./lib/class");
 const url = require('url');
 const miksagoConnection = require('websocket-server/lib/ws/connection');
