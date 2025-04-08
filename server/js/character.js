@@ -1,22 +1,22 @@
 
-var cls = require("./lib/class"),
-    Messages = require("./message"),
-    Utils = require("./utils"),
-    Properties = require("./properties"),
-    Types = require("../../shared/js/gametypes");
+const cls = require("./lib/class");
+const Messages = require("./message");
+const Utils = require("./utils");
+const Properties = require("./properties");
+const Types = require("../../shared/js/gametypes");
+const Entity = require("./entity");
 
 module.exports = Character = Entity.extend({
     init: function(id, type, kind, x, y) {
         this._super(id, type, kind, x, y);
-        
         this.orientation = Utils.randomOrientation();
         this.attackers = {};
         this.target = null;
     },
     
     getState: function() {
-        var basestate = this._getBaseState(),
-            state = [];
+        const basestate = this._getBaseState();
+        const state = [];
         
         state.push(this.orientation);
         if(this.target) {
@@ -32,8 +32,8 @@ module.exports = Character = Entity.extend({
     },
     
     regenHealthBy: function(value) {
-        var hp = this.hitPoints,
-            max = this.maxHitPoints;
+        const hp = this.hitPoints;
+        const max = this.maxHitPoints;
             
         if(hp < max) {
             if(hp + value <= max) {
@@ -82,12 +82,12 @@ module.exports = Character = Entity.extend({
     removeAttacker: function(entity) {
         if(entity && entity.id in this.attackers) {
             delete this.attackers[entity.id];
-            log.debug(this.id +" REMOVED ATTACKER "+ entity.id);
+            console.debug(this.id +" REMOVED ATTACKER "+ entity.id);
         }
     },
     
     forEachAttacker: function(callback) {
-        for(var id in this.attackers) {
+        for (const id in this.attackers) {
             callback(this.attackers[id]);
         }
     }
