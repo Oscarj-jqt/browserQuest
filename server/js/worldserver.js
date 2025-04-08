@@ -1,21 +1,21 @@
 
-var cls = require("./lib/class"),
-    _ = require("underscore"),
-    Log = require('log'),
-    Entity = require('./entity'),
-    Character = require('./character'),
-    Mob = require('./mob'),
-    Map = require('./map'),
-    Npc = require('./npc'),
-    Player = require('./player'),
-    Item = require('./item'),
-    MobArea = require('./mobarea'),
-    ChestArea = require('./chestarea'),
-    Chest = require('./chest'),
-    Messages = require('./message'),
-    Properties = require("./properties"),
-    Utils = require("./utils"),
-    Types = require("../../shared/js/gametypes");
+const cls = require("./lib/class");
+const _ = require("underscore");
+const Log = require('log');
+const Entity = require('./entity');
+const Character = require('./character');
+const Mob = require('./mob');
+const Map = require('./map');
+const Npc = require('./npc');
+const Player = require('./player');
+const Item = require('./item');
+const MobArea = require('./mobarea');
+const ChestArea = require('./chestarea');
+const Chest = require('./chest');
+const Messages = require('./message');
+const Properties = require("./properties");
+const Utils = require("./utils");
+const Types = require("../../shared/js/gametypes");
 
 // ======= GAME SERVER ========
 
@@ -71,7 +71,7 @@ module.exports = World = cls.Class.extend({
             self.pushRelevantEntityListTo(player);
     
             var move_callback = function(x, y) {
-                log.debug(player.name + " is moving to (" + x + ", " + y + ").");
+                Log.debug(player.name + " is moving to (" + x + ", " + y + ").");
                 
                 player.forEachAttacker(function(mob) {
                     var target = self.getEntityById(mob.target);
@@ -256,7 +256,7 @@ module.exports = World = cls.Class.extend({
             }
         });
         
-        log.debug("Pushed "+_.size(ids)+" new spawns to "+player.id);
+        Log.debug("Pushed "+_.size(ids)+" new spawns to "+player.id);
     },
     
     pushToPlayer: function(player, message) {
@@ -344,7 +344,7 @@ module.exports = World = cls.Class.extend({
         
         entity.destroy();
         this.removeFromGroups(entity);
-        log.debug("Removed "+ Types.getKindAsString(entity.kind) +" : "+ entity.id);
+        Log.debug("Removed "+ Types.getKindAsString(entity.kind) +" : "+ entity.id);
     },
     
     addPlayer: function(player) {
@@ -352,7 +352,7 @@ module.exports = World = cls.Class.extend({
         this.players[player.id] = player;
         this.outgoingQueues[player.id] = [];
         
-        //console.log("Added player : " + player.id);
+        console.log("Added player : " + player.id);
     },
     
     removePlayer: function(player) {
@@ -488,7 +488,7 @@ module.exports = World = cls.Class.extend({
             mob.setTarget(player);
             
             this.broadcastAttacker(mob);
-            log.debug(mob.id + " is now attacking " + player.id);
+            Log.debug(mob.id + " is now attacking " + player.id);
         }
     },
     
@@ -750,9 +750,9 @@ module.exports = World = cls.Class.extend({
     },
     
     logGroupPlayers: function(groupId) {
-        log.debug("Players inside group "+groupId+":");
+        Log.debug("Players inside group "+groupId+":");
         _.each(this.groups[groupId].players, function(id) {
-            log.debug("- player "+id);
+            Log.debug("- player "+id);
         });
     },
     
@@ -768,7 +768,7 @@ module.exports = World = cls.Class.extend({
                 
                 if(_.size(oldGroups) > 0) {
                     entity.recentlyLeftGroups = _.difference(oldGroups, newGroups);
-                    log.debug("group diff: " + entity.recentlyLeftGroups);
+                    Log.debug("group diff: " + entity.recentlyLeftGroups);
                 }
             }
         }
@@ -820,9 +820,6 @@ module.exports = World = cls.Class.extend({
         }
     },
     
-    handleEmptyMobArea: function(area) {
-
-    },
     
     handleEmptyChestArea: function(area) {
         if(area) {

@@ -1,8 +1,8 @@
+const cls = require('./lib/class');
+const Utils = require('./utils');
+const Types = require('../../shared/js/gametypes');
+const Mob = require('./mob');
 
-var cls = require('./lib/class'),
-    _ = require('underscore'),
-    Utils = require('./utils'),
-    Types = require("../../shared/js/gametypes");
 
 module.exports = Area = cls.Class.extend({
     init: function(id, x, y, width, height, world) {
@@ -17,8 +17,8 @@ module.exports = Area = cls.Class.extend({
     },
     
     _getRandomPositionInsideArea: function() {
-        var pos = {},
-            valid = false;
+        let pos = {};
+        let valid = false;
         
         while(!valid) {
             pos.x = this.x + Utils.random(this.width + 1);
@@ -28,26 +28,28 @@ module.exports = Area = cls.Class.extend({
         return pos;
     },
     
-    removeFromArea: function(entity) {
-        var i = _.indexOf(_.pluck(this.entities, 'id'), entity.id);
-        this.entities.splice(i, 1);
-        
-        if(this.isEmpty() && this.hasCompletelyRespawned && this.empty_callback) {
+    removeFromArea: function (entity) {
+        const index = this.entities.findIndex(e => e.id === entity.id);
+        if (index !== -1) {
+            this.entities.splice(index, 1);
+        }
+
+        if (this.isEmpty() && this.hasCompletelyRespawned && this.empty_callback) {
             this.hasCompletelyRespawned = false;
             this.empty_callback();
         }
     },
     
-    addToArea: function(entity) {
-        if(entity) {
+    addToArea: function (entity) {
+        if (entity) {
             this.entities.push(entity);
             entity.area = this;
-            if(entity instanceof Mob) {
+            if (entity instanceof Mob) {
                 this.world.addMob(entity);
             }
         }
-        
-        if(this.isFull()) {
+
+        if (this.isFull()) {
             this.hasCompletelyRespawned = true;
         }
     },
@@ -56,15 +58,16 @@ module.exports = Area = cls.Class.extend({
         this.nbEntities = nb;
     },
     
-    isEmpty: function() {
-        return !_.any(this.entities, function(entity) { return !entity.isDead });
+    isEmpty: function () {
+        return !this.entities.some(entity => !entity.isDead);
     },
     
-    isFull: function() {
-        return !this.isEmpty() && (this.nbEntities === _.size(this.entities));
+    isFull: function () {
+        return !this.isEmpty() && (this.nbEntities === this.entities.length);
     },
+
     
-    onEmpty: function(callback) {
+    onEmpty: function (callback) {
         this.empty_callback = callback;
     }
 });
