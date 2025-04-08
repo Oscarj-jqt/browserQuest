@@ -1,8 +1,9 @@
+const cls = require('./lib/class');
+const _ = require('underscore');
+const Utils = require('./utils');
+const Types = require('../../shared/js/gametypes');
+const Mob = require('./mob');
 
-var cls = require('./lib/class'),
-    _ = require('underscore'),
-    Utils = require('./utils'),
-    Types = require("../../shared/js/gametypes");
 
 module.exports = Area = cls.Class.extend({
     init: function(id, x, y, width, height, world) {
@@ -17,8 +18,8 @@ module.exports = Area = cls.Class.extend({
     },
     
     _getRandomPositionInsideArea: function() {
-        var pos = {},
-            valid = false;
+        let pos = {};
+        let valid = false;
         
         while(!valid) {
             pos.x = this.x + Utils.random(this.width + 1);
@@ -29,7 +30,7 @@ module.exports = Area = cls.Class.extend({
     },
     
     removeFromArea: function(entity) {
-        var i = _.indexOf(_.pluck(this.entities, 'id'), entity.id);
+        const i = _.indexOf(_.pluck(this.entities, 'id'), entity.id);
         this.entities.splice(i, 1);
         
         if(this.isEmpty() && this.hasCompletelyRespawned && this.empty_callback) {
@@ -57,7 +58,8 @@ module.exports = Area = cls.Class.extend({
     },
     
     isEmpty: function() {
-        return !_.any(this.entities, function(entity) { return !entity.isDead });
+        return !_.any(this.entities, (entity) => !entity.isDead);
+
     },
     
     isFull: function() {
