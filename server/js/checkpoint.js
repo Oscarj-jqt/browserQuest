@@ -1,8 +1,8 @@
 
-var cls = require('./lib/class'),
-    _ = require('underscore'),
-    Utils = require('./utils'),
-    Types = require("../../shared/js/gametypes");
+const cls = require('./lib/class');
+const Utils = require('./utils');
+const Types = require('../../shared/js/gametypes');
+
 
 module.exports = Checkpoint = cls.Class.extend({
     init: function(id, x, y, width, height) {
@@ -14,7 +14,8 @@ module.exports = Checkpoint = cls.Class.extend({
     },
     
     getRandomPosition: function() {
-        var pos = {};
+        const pos = {};
+
         
         pos.x = this.x + Utils.randomInt(0, this.width - 1);
         pos.y = this.y + Utils.randomInt(0, this.height - 1);

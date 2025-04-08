@@ -1,5 +1,4 @@
 const cls = require('./lib/class');
-const _ = require('underscore');
 const Utils = require('./utils');
 const Types = require('../../shared/js/gametypes');
 const Mob = require('./mob');
@@ -29,26 +28,28 @@ module.exports = Area = cls.Class.extend({
         return pos;
     },
     
-    removeFromArea: function(entity) {
-        const i = _.indexOf(_.pluck(this.entities, 'id'), entity.id);
-        this.entities.splice(i, 1);
-        
-        if(this.isEmpty() && this.hasCompletelyRespawned && this.empty_callback) {
+    removeFromArea: function (entity) {
+        const index = this.entities.findIndex(e => e.id === entity.id);
+        if (index !== -1) {
+            this.entities.splice(index, 1);
+        }
+
+        if (this.isEmpty() && this.hasCompletelyRespawned && this.empty_callback) {
             this.hasCompletelyRespawned = false;
             this.empty_callback();
         }
     },
     
-    addToArea: function(entity) {
-        if(entity) {
+    addToArea: function (entity) {
+        if (entity) {
             this.entities.push(entity);
             entity.area = this;
-            if(entity instanceof Mob) {
+            if (entity instanceof Mob) {
                 this.world.addMob(entity);
             }
         }
-        
-        if(this.isFull()) {
+
+        if (this.isFull()) {
             this.hasCompletelyRespawned = true;
         }
     },
@@ -57,16 +58,16 @@ module.exports = Area = cls.Class.extend({
         this.nbEntities = nb;
     },
     
-    isEmpty: function() {
-        return !_.any(this.entities, (entity) => !entity.isDead);
+    isEmpty: function () {
+        return !this.entities.some(entity => !entity.isDead);
+    },
+    
+    isFull: function () {
+        return !this.isEmpty() && (this.nbEntities === this.entities.length);
+    },
 
-    },
     
-    isFull: function() {
-        return !this.isEmpty() && (this.nbEntities === _.size(this.entities));
-    },
-    
-    onEmpty: function(callback) {
+    onEmpty: function (callback) {
         this.empty_callback = callback;
     }
 });
