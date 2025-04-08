@@ -1,6 +1,7 @@
 const Log = require('log');
 const Properties = require("./properties");
 const Types = require("../../shared/js/gametypes");
+const Character = require("./character");
 
 module.exports = Mob = Character.extend({
     init: function(id, kind, x, y) {

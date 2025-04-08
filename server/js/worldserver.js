@@ -71,7 +71,7 @@ module.exports = World = cls.Class.extend({
             self.pushRelevantEntityListTo(player);
     
             var move_callback = function(x, y) {
-                log.debug(player.name + " is moving to (" + x + ", " + y + ").");
+                Log.debug(player.name + " is moving to (" + x + ", " + y + ").");
                 
                 player.forEachAttacker(function(mob) {
                     var target = self.getEntityById(mob.target);
@@ -256,7 +256,7 @@ module.exports = World = cls.Class.extend({
             }
         });
         
-        log.debug("Pushed "+_.size(ids)+" new spawns to "+player.id);
+        Log.debug("Pushed "+_.size(ids)+" new spawns to "+player.id);
     },
     
     pushToPlayer: function(player, message) {
@@ -344,7 +344,7 @@ module.exports = World = cls.Class.extend({
         
         entity.destroy();
         this.removeFromGroups(entity);
-        log.debug("Removed "+ Types.getKindAsString(entity.kind) +" : "+ entity.id);
+        Log.debug("Removed "+ Types.getKindAsString(entity.kind) +" : "+ entity.id);
     },
     
     addPlayer: function(player) {
@@ -352,7 +352,7 @@ module.exports = World = cls.Class.extend({
         this.players[player.id] = player;
         this.outgoingQueues[player.id] = [];
         
-        //console.log("Added player : " + player.id);
+        console.log("Added player : " + player.id);
     },
     
     removePlayer: function(player) {
@@ -488,7 +488,7 @@ module.exports = World = cls.Class.extend({
             mob.setTarget(player);
             
             this.broadcastAttacker(mob);
-            log.debug(mob.id + " is now attacking " + player.id);
+            Log.debug(mob.id + " is now attacking " + player.id);
         }
     },
     
@@ -750,9 +750,9 @@ module.exports = World = cls.Class.extend({
     },
     
     logGroupPlayers: function(groupId) {
-        log.debug("Players inside group "+groupId+":");
+        Log.debug("Players inside group "+groupId+":");
         _.each(this.groups[groupId].players, function(id) {
-            log.debug("- player "+id);
+            Log.debug("- player "+id);
         });
     },
     
@@ -768,7 +768,7 @@ module.exports = World = cls.Class.extend({
                 
                 if(_.size(oldGroups) > 0) {
                     entity.recentlyLeftGroups = _.difference(oldGroups, newGroups);
-                    log.debug("group diff: " + entity.recentlyLeftGroups);
+                    Log.debug("group diff: " + entity.recentlyLeftGroups);
                 }
             }
         }
@@ -820,9 +820,6 @@ module.exports = World = cls.Class.extend({
         }
     },
     
-    handleEmptyMobArea: function(area) {
-
-    },
     
     handleEmptyChestArea: function(area) {
         if(area) {

@@ -1,4 +1,4 @@
-const readFile = require('fs');
+const fs = require('fs');
 const metrics = require('./metrics');
 const WebSocket = require('ws');
 const WorldServer = require("./worldserver");
@@ -7,6 +7,7 @@ const _ = require('underscore');
 
 function main(config) {
     const server = new WebSocket.Server({ port: config.port });
+    console.log("Server started on port", config.port);
     const metricsInstance = config.metrics_enabled ? new metrics(config) : null;
     const worlds = [];
     let lastTotalPlayers = 0;
@@ -23,7 +24,7 @@ function main(config) {
             LogInstance = new Log(Log.info); break;
     }
 
-    LogInstance.info("Démarrage du serveur BrowserQuest...");
+    console.info("Démarrage du serveur BrowserQuest...");
 
     server.on('connection', (ws) => {
         let world;
@@ -44,19 +45,30 @@ function main(config) {
             connect();
         }
 
+        ws.on('message', (message) => {
+            console.log('Received:', message);
+
+            if (message === 'requestStatus') {
+                const status = getWorldDistribution(worlds);  
+                ws.send(JSON.stringify(status));  
+            }
+        });
+
         ws.on('error', (error) => {
-            LogInstance.error("WebSocket error:", error);
+            console.error("WebSocket error:", error);
         });
 
         ws.on('close', () => {
-            LogInstance.info("Connection closed");
+            console.info("Connection closed");
         });
     });
 
     const onPopulationChange = () => {
         metricsInstance.updatePlayerCounters(worlds, (totalPlayers) => {
             _.each(worlds, (world) => {
-                world.updatePopulation(totalPlayers);
+                if (world.playerCount !== totalPlayers) {
+                    world.updatePopulation(totalPlayers);
+                }
             });
         });
         metricsInstance.updateWorldDistribution(getWorldDistribution(worlds));
@@ -72,7 +84,6 @@ function main(config) {
         }
     });
 
-    server.onRequestStatus(() => JSON.stringify(getWorldDistribution(worlds)));
 
     if (config.metrics_enabled) {
         metricsInstance.ready(() => {
@@ -81,7 +92,7 @@ function main(config) {
     }
 
     process.on('uncaughtException', (e) => {
-        LogInstance.error('uncaughtException: ' + e);
+        console.error('uncaughtException: ' + e);
     });
 }
 
@@ -90,7 +101,7 @@ function getWorldDistribution(worlds) {
 }
 
 function getConfigFile(path, callback) {
-    readFile(path, 'utf8', (err, json_string) => {
+    fs.readFile(path, 'utf8', (err, json_string) => {
         if (err) {
             console.error("Could not open config file:", err.path);
             callback(null);

@@ -4,6 +4,7 @@ const Formulas = require("./formulas");
 const check = require("./format").check;
 const Types = require("../../shared/js/gametypes");
 const cls = require("./lib/class");
+const Character = require("./character");
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {

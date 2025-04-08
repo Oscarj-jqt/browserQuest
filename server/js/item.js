@@ -1,3 +1,4 @@
+const Entity = require("./entity");
 module.exports = class Item extends Entity {
     constructor(id, kind, x, y) {
         super(id, "item", kind, x, y);

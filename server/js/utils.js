@@ -1,6 +1,7 @@
-const cls = require('./lib/class');
+const Utils = {};  
+
 const sanitizer = require('sanitizer');
-const Types = require("../../shared/js/gametypes");
+    Types = require("../../shared/js/gametypes");
 
 module.exports = Utils;
 
