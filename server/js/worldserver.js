@@ -1,21 +1,21 @@
 
-var cls = require("./lib/class"),
-    _ = require("underscore"),
-    Log = require('log'),
-    Entity = require('./entity'),
-    Character = require('./character'),
-    Mob = require('./mob'),
-    Map = require('./map'),
-    Npc = require('./npc'),
-    Player = require('./player'),
-    Item = require('./item'),
-    MobArea = require('./mobarea'),
-    ChestArea = require('./chestarea'),
-    Chest = require('./chest'),
-    Messages = require('./message'),
-    Properties = require("./properties"),
-    Utils = require("./utils"),
-    Types = require("../../shared/js/gametypes");
+const cls = require("./lib/class");
+const _ = require("underscore");
+const Log = require('log');
+const Entity = require('./entity');
+const Character = require('./character');
+const Mob = require('./mob');
+const Map = require('./map');
+const Npc = require('./npc');
+const Player = require('./player');
+const Item = require('./item');
+const MobArea = require('./mobarea');
+const ChestArea = require('./chestarea');
+const Chest = require('./chest');
+const Messages = require('./message');
+const Properties = require("./properties");
+const Utils = require("./utils");
+const Types = require("../../shared/js/gametypes");
 
 // ======= GAME SERVER ========
 

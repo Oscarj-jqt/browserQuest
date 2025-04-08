@@ -1,15 +1,14 @@
 
-var cls = require("./lib/class"),
-    url = require('url'),
-    wsserver = require("ws"),
-    miksagoConnection = require('websocket-server/lib/ws/connection'),
-    worlizeRequest = require('websocket').request,
-    http = require('http'),
-    Utils = require('./utils'),
-    _ = require('underscore'),
-    BISON = require('bison'),
-    WS = {},
-    useBison = false;
+const cls = require("./lib/class");
+const url = require('url');
+const miksagoConnection = require('websocket-server/lib/ws/connection');
+const worlizeRequest = require('websocket').request;
+const http = require('http');
+const Utils = require('./utils');
+const _ = require('underscore');
+const BISON = require('bison');
+const WS = {};
+const useBison = false;
 
 module.exports = WS;
 

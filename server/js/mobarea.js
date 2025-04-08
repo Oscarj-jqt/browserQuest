@@ -1,7 +1,5 @@
-
-var Area = require('./area'),
-    _ = require('underscore'),
-    Types = require("../../shared/js/gametypes");
+const Area = require('./area');
+const Types = require("../../shared/js/gametypes");
 
 module.exports = MobArea = Area.extend({
     init: function(id, nb, kind, x, y, width, height, world) {
@@ -10,63 +8,52 @@ module.exports = MobArea = Area.extend({
         this.kind = kind;
         this.respawns = [];
         this.setNumberOfEntities(this.nb);
-        
-        //this.initRoaming();
     },
     
     spawnMobs: function() {
-        for(var i = 0; i < this.nb; i += 1) {
+        for (let i = 0; i < this.nb; i++) {
             this.addToArea(this._createMobInsideArea());
         }
     },
     
     _createMobInsideArea: function() {
-        var k = Types.getKindFromString(this.kind),
-            pos = this._getRandomPositionInsideArea(),
-            mob = new Mob('1' + this.id + ''+ k + ''+ this.entities.length, k, pos.x, pos.y);
-        
+        const k = Types.getKindFromString(this.kind);
+        const pos = this._getRandomPositionInsideArea();
+        const mob = new Mob('1' + this.id + '' + k + '' + this.entities.length, k, pos.x, pos.y);
+
         mob.onMove(this.world.onMobMoveCallback.bind(this.world));
 
         return mob;
     },
     
     respawnMob: function(mob, delay) {
-        var self = this;
-        
         this.removeFromArea(mob);
-        
-        setTimeout(function() {
-            var pos = self._getRandomPositionInsideArea();
-            
+
+        setTimeout(() => {
+            const pos = this._getRandomPositionInsideArea();
             mob.x = pos.x;
             mob.y = pos.y;
             mob.isDead = false;
-            self.addToArea(mob);
-            self.world.addMob(mob);
+            this.addToArea(mob);
+            this.world.addMob(mob);
         }, delay);
     },
 
-    initRoaming: function(mob) {
-        var self = this;
-        
-        setInterval(function() {
-            _.each(self.entities, function(mob) {
-                var canRoam = (Utils.random(20) === 1),
-                    pos;
+    initRoaming: function() {
+        setInterval(() => {
+            for (const mob of this.entities) {
+                const canRoam = (Utils.random(20) === 1);
                 
-                if(canRoam) {
-                    if(!mob.hasTarget() && !mob.isDead) {
-                        pos = self._getRandomPositionInsideArea();
-                        mob.move(pos.x, pos.y);
-                    }
+                if (canRoam && !mob.hasTarget() && !mob.isDead) {
+                    const pos = this._getRandomPositionInsideArea();
+                    mob.move(pos.x, pos.y);
                 }
-            });
+            }
         }, 500);
     },
     
     createReward: function() {
-        var pos = this._getRandomPositionInsideArea();
-        
+        const pos = this._getRandomPositionInsideArea();
         return { x: pos.x, y: pos.y, kind: Types.Entities.CHEST };
     }
 });

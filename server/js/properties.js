@@ -1,7 +1,6 @@
+const Types = require("../../shared/js/gametypes");
 
-var Types = require("../../shared/js/gametypes");
-
-var Properties = {
+const Properties = {
     rat: {
         drops: {
             flask: 40,
@@ -160,7 +159,7 @@ Properties.getArmorLevel = function(kind) {
             return Types.getArmorRank(kind) + 1;
         }
     } catch(e) {
-        log.error("No level found for armor: "+Types.getKindAsString(kind));
+        console.error("No level found for armor: "+Types.getKindAsString(kind));
     }
 };
 
@@ -172,7 +171,7 @@ Properties.getWeaponLevel = function(kind) {
             return Types.getWeaponRank(kind) + 1;
         }
     } catch(e) {
-        log.error("No level found for weapon: "+Types.getKindAsString(kind));
+        console.error("No level found for weapon: "+Types.getKindAsString(kind));
     }
 };
 

@@ -1,12 +1,10 @@
-
-var Utils = {},
-    sanitizer = require('sanitizer'),
-    Types = require("../../shared/js/gametypes");
+const cls = require('./lib/class');
+const sanitizer = require('sanitizer');
+const Types = require("../../shared/js/gametypes");
 
 module.exports = Utils;
 
 Utils.sanitize = function(string) {
-    // Strip unsafe tags, then escape as html entities.
     return sanitizer.escape(sanitizer.sanitize(string));
 };
 

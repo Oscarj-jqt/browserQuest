@@ -89,7 +89,6 @@ module.exports = Map = cls.Class.extend({
                     tileIndex += 1;
                 }
             }
-            //log.info("Collision grid generated.");
         }
     },
 
