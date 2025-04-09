@@ -1,62 +1,61 @@
 #!/usr/bin/env node
 
-var util = require('util'),
-    Log = require('log'),
-    path = require("path"),
-    fs = require("fs"),
-    processMap = require('./processmap'),
-    log = new Log(Log.DEBUG);
-    
-var source = process.argv[2],
-    destination = process.argv[3],
-    mode = process.argv[4];
+const fs = require("fs");
+const path = require("path");
+const util = require('util');
+const Log = require('log');
+const processMap = require('./processmap');
 
-if(!source || !destination) {
-    util.puts("Usage : ./exportmap.js map_file json_file [mode]");
-    util.puts("Optional parameter : mode. Values: \"server\" (default) or \"client\".");
+const log = new Log(Log.DEBUG);
+    
+const source = process.argv[2];
+const destination = process.argv[3];
+const mode = process.argv[4] || 'server';
+
+if (!source || !destination) {
+    console.log("Usage : ./exportmap.js map_file json_file [mode]");
+    console.log("Optional parameter : mode. Values: \"server\" (default) or \"client\".");
     process.exit(0);
 }
 
-function main() {
-    getTiledJSONmap(source, function(json) {
-        var options = { mode: mode || "server" },
-            map = processMap(json, options);
-        
-        var jsonMap = JSON.stringify(map); // Save the processed map object as JSON data
-        
-        if(mode === "client") {
-            // map in a .json file for ajax loading
-            fs.writeFile(destination+".json", jsonMap, function(err, file) {
-                log.info("Finished processing map file: "+ destination + ".json was saved.");
-            });
-            
-            // map in a .js file for web worker loading
-            jsonMap = "var mapData = "+JSON.stringify(map);
-            fs.writeFile(destination+".js", jsonMap, function(err, file) {
-                log.info("Finished processing map file: "+ destination + ".js was saved.");
-            });
+async function main() {
+    try {
+        const json = await getTiledJSONmap(source);
+        const options = { mode };
+        const map = processMap(json, options);
+        const jsonMap = JSON.stringify(map);
+
+        if (mode === "client") {
+            await saveMapToFile(destination + ".json", jsonMap);
+            await saveMapToFile(destination + ".js", `var mapData = ${jsonMap}`);
         } else {
-            fs.writeFile(destination, jsonMap, function(err, file) {
-                log.info("Finished processing map file: "+ destination + " was saved.");
-            });
+            await saveMapToFile(destination, jsonMap);
         }
-    });
+
+    } catch (error) {
+        log.error(error);
+        process.exit(1);
+    }
 }
 
 // Loads the temporary JSON Tiled map converted by tmx2json.py
-function getTiledJSONmap(filename, callback) {
-    var self = this;
-    
-    path.exists(filename, function(exists) {
-        if(!exists) {  
-            log.error(filename + " doesn't exist.")
-            return;
-        }
-    
-        fs.readFile(source, function(err, file) {
-            callback(JSON.parse(file.toString()));
-        });
+function getTiledJSONmap(filename) {
+    return new Promise((resolve, reject) => {
+        fs.promises.access(filename)
+            .then(() => fs.promises.readFile(filename, 'utf-8'))
+            .then(fileContent => resolve(JSON.parse(fileContent)))
+            .catch(() => reject(`${filename} doesn't exist.`));
     });
 }
 
+// Save the processed map to the file system
+function saveMapToFile(filename, data) {
+    return fs.promises.writeFile(filename, data)
+        .then(() => {
+            log.info(`Finished processing map file: ${filename} was saved.`);
+        })
+        .catch(err => {
+            log.error(`Error saving map file: ${err}`);
+        });
+}
 main();

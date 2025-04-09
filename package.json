@@ -1,6 +1,6 @@
 {
     "name": "BrowserQuest",
-    "version": "0.0.1",
+    "version": "22.11.0",
     "private": false,
     "dependencies": {
         "bison": "^1.1.1",
