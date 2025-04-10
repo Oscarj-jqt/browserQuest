@@ -1,4 +1,8 @@
-FROM node:18-alpine
+# Étape de build
+FROM node:18-alpine AS build
+
+# Installe bash sans mettre à jour apk
+RUN apk add --no-cache bash
 
 WORKDIR /app
 
@@ -6,15 +10,17 @@ COPY client ./client
 COPY bin ./bin
 
 RUN chmod +x ./bin/build.sh
-
 RUN cp client/config/config_build.json-dist client/config/config_build.json
-
 RUN ./bin/build.sh
 
-RUN npm install -g http-server
+# Étape de production
+FROM node:18-alpine
 
-# Copier uniquement le résultat (optionnel si tu veux alléger l'image finale)
-# Tu pourrais faire un multi-stage build plus tard pour ça
+WORKDIR /app
+
+# Copie les fichiers de l'étape de build
+COPY --from=build /app/client /app/client
+COPY --from=build /app/bin /app/bin
 
 EXPOSE 8080
 

@@ -8,8 +8,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ../config_local.json:/app/config_local.json
-
+      - ../server:/app/server
+      - ../shared:/app/shared
   frontend:
     build:
       context: ..
