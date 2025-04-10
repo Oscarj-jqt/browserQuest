@@ -123,39 +123,32 @@ function getConfigFile(path, callback) {
 var defaultConfigPath = './server/config.json',
     customConfigPath = './server/config_local.json';
 
-const argv = yargs
+    const argv = yargs
     .option('port', {
         alias: 'p',
         description: 'Port sur lequel écouter',
         type: 'number'
     })
-    .argv;    
-process.argv.forEach(function (val, index, array) {
-    if(index === 2) {
-        customConfigPath = val;
-    }
-});
+    .argv;
 
-getConfigFile(defaultConfigPath, function(defaultConfig) {
-    getConfigFile(customConfigPath, function(localConfig) {
-        if(localConfig) {
-            if (argv.port) {
-                localConfig.port = argv.port;
-            }
-            main(localConfig);
-        } else if(defaultConfig) {
-            if (argv.port) {
-                defaultConfig.port = argv.port; 
-            }
-            main(defaultConfig);
-        } else {
+if (argv._.includes('--port') || argv._.includes('-p')) {
+    console.log("Le paramètre '--port' est un argument de configuration, pas un fichier.");
+    process.exit(1);
+}
+
+getConfigFile(defaultConfigPath, function (defaultConfig) {
+    getConfigFile(customConfigPath, function (localConfig) {
+        let configToUse = defaultConfig || localConfig;
+
+        if (!configToUse) {
             console.error("Server cannot start without any configuration file.");
             process.exit(1);
         }
+
+        if (argv.port) {
+            configToUse.port = argv.port;
+        }
+
+        main(configToUse);
     });
 });
-
-// function main(config) {
-//     console.log(`Démarrage du serveur sur le port ${config.port}`);
-//     // Démarre le serveur avec la configuration, par exemple avec Express
-// }
