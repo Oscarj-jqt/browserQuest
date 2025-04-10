@@ -1,4 +1,5 @@
-
+var yargs = require('yargs');
+var config = require('../config.json');
 var fs = require('fs'),
     Metrics = require('./metrics');
  
@@ -122,6 +123,13 @@ function getConfigFile(path, callback) {
 var defaultConfigPath = './server/config.json',
     customConfigPath = './server/config_local.json';
 
+const argv = yargs
+    .option('port', {
+        alias: 'p',
+        description: 'Port sur lequel écouter',
+        type: 'number'
+    })
+    .argv;    
 process.argv.forEach(function (val, index, array) {
     if(index === 2) {
         customConfigPath = val;
@@ -131,8 +139,14 @@ process.argv.forEach(function (val, index, array) {
 getConfigFile(defaultConfigPath, function(defaultConfig) {
     getConfigFile(customConfigPath, function(localConfig) {
         if(localConfig) {
+            if (argv.port) {
+                localConfig.port = argv.port;
+            }
             main(localConfig);
         } else if(defaultConfig) {
+            if (argv.port) {
+                defaultConfig.port = argv.port; 
+            }
             main(defaultConfig);
         } else {
             console.error("Server cannot start without any configuration file.");
@@ -140,3 +154,8 @@ getConfigFile(defaultConfigPath, function(defaultConfig) {
         }
     });
 });
+
+// function main(config) {
+//     console.log(`Démarrage du serveur sur le port ${config.port}`);
+//     // Démarre le serveur avec la configuration, par exemple avec Express
+// }
