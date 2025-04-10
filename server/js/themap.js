@@ -5,7 +5,7 @@ var cls = require('./lib/class')
     Utils = require('./utils'),
     Checkpoint = require('./checkpoint');
 
-module.exports = Map = cls.Class.extend({    
+module.exports = Themap = cls.Class.extend({    
     init: function(filepath) {
     	var self = this;
     
@@ -21,7 +21,7 @@ module.exports = Map = cls.Class.extend({
         }
         else
         {
-            log.error(filepath + " doesn't exist.");
+            console.log(filepath + " doesn't exist.");
         }
     },
 
@@ -91,7 +91,7 @@ module.exports = Map = cls.Class.extend({
                     tileIndex += 1;
                 }
             }
-            //log.info("Collision grid generated.");
+            console.log("Collision grid generated.");
         }
     },
 
