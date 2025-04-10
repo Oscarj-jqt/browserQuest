@@ -3,12 +3,14 @@
     "version": "0.0.1",
     "private": false,
     "dependencies": {
+        "axios": "^1.8.4",
         "bison": ">0",
         "express": ">0",
         "log": ">0",
         "memcache": "0.3.0",
         "sanitizer": "0.1.2",
         "socket.io": ">0",
-        "underscore": ">0"
+        "underscore": ">0",
+        "yargs": "^17.7.2"
     }
 }
