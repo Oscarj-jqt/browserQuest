@@ -1,7 +1,5 @@
-
 var fs = require('fs'),
     Metrics = require('./metrics');
- 
 
 function main(config) {
     var ws = require("./ws"),
@@ -27,17 +25,15 @@ function main(config) {
     
     switch(config.debug_level) {
         case "error":
-            log = new Log(console.log); break;
         case "debug":
-            log = new Log(console.log); break;
         case "info":
             log = new Log(console.log); break;
     };
     
-    console.log("Starting BrowserQuest game server...");
-    
+    console.log("🚀 Starting BrowserQuest game server...");
+
     server.onConnect(function(connection) {
-        var world, // the one in which the player will be spawned
+        var world,
             connect = function() {
                 if(world) {
                     world.connect_callback(new Player(connection, world));
@@ -46,13 +42,10 @@ function main(config) {
         
         if(metrics) {
             metrics.getOpenWorldCount(function(open_world_count) {
-                // choose the least populated world among open worlds
                 world = _.min(_.first(worlds, open_world_count), function(w) { return w.playerCount; });
                 connect();
             });
-        }
-        else {
-            // simply fill each world sequentially until they are full
+        } else {
             world = _.detect(worlds, function(world) {
                 return world.playerCount < config.nb_players_per_world;
             });
@@ -90,7 +83,7 @@ function main(config) {
     
     if(config.metrics_enabled) {
         metrics.ready(function() {
-            onPopulationChange(); // initialize all counters to 0 when the server starts
+            onPopulationChange();
         });
     }
     
@@ -101,7 +94,6 @@ function main(config) {
 
 function getWorldDistribution(worlds) {
     var distribution = [];
-    
     _.each(worlds, function(world) {
         distribution.push(world.playerCount);
     });
@@ -111,7 +103,7 @@ function getWorldDistribution(worlds) {
 function getConfigFile(path, callback) {
     fs.readFile(path, 'utf8', function(err, json_string) {
         if(err) {
-            console.error("Could not open config file:", err.path);
+            console.warn("⚠️ Optional config file not found:", err.path);
             callback(null);
         } else {
             callback(JSON.parse(json_string));
@@ -122,7 +114,7 @@ function getConfigFile(path, callback) {
 var defaultConfigPath = './server/config.json',
     customConfigPath = './server/config_local.json';
 
-process.argv.forEach(function (val, index, array) {
+process.argv.forEach(function (val, index) {
     if(index === 2) {
         customConfigPath = val;
     }
@@ -135,7 +127,7 @@ getConfigFile(defaultConfigPath, function(defaultConfig) {
         } else if(defaultConfig) {
             main(defaultConfig);
         } else {
-            console.error("Server cannot start without any configuration file.");
+            console.error("❌ Server cannot start without any configuration file.");
             process.exit(1);
         }
     });
