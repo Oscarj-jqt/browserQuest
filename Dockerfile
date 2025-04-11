@@ -1,16 +1,13 @@
-FROM node:18
+FROM node:22.8.0
 
 WORKDIR /app
 
-# Copier le serveur et les fichiers partagés
-COPY server/ ./server/
-COPY shared/ ./shared/
-
-# Copier les fichiers de configuration
 COPY package*.json ./
 
-# Installer les dépendances
 RUN npm install
 
-# Lancer le serveur
+COPY . .
+
+EXPOSE 8000
+
 CMD ["node", "server/js/main.js"]
