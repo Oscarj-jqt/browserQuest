@@ -4,5 +4,6 @@ build.txt
 client/audio/music
 .DS_Store
 *.swp
+server/js/main2.js
 server/failover.js
 server/proxy-failover.js

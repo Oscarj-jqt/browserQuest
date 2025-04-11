@@ -1,5 +1,3 @@
-BrowserQuest [updated & with Socket.IO]
-
 BrowserQuest is a HTML5/JavaScript multiplayer game experiment.
 ============
 
@@ -26,11 +24,7 @@ Then go inside the Client folder and open index.html.
 You might want to host a webserver and open index.html in that (e.g. 127.0.0.1/index.html).
 
 
-Documentation
--------------
-
 Documentation is located in client and server directories.
-
 
 
 Developers
