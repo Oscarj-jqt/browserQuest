@@ -30,9 +30,6 @@ npx http-server ./client
 ```
 
 
-
-
-
 Developers
 -------------
 * Oscar JACQUET
