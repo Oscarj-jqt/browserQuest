@@ -3,8 +3,10 @@ const WebSocket = require('ws');
 const Metrics = require('./metrics');
 const _ = require('underscore');
 
-// 🔐 Antiflood : suivi des connexions
+// 🔐 Antiflood connexions
 const connectionAttempts = new Map();
+const messageHistory = new Map();
+const maxMessagesPerMinute = 60;
 
 function isRateLimited(ip) {
     const now = Date.now();
@@ -21,6 +23,37 @@ function isRateLimited(ip) {
 
     connectionAttempts.get(ip).push(now);
     return false;
+}
+
+function handleIncomingMessage(data, connection) {
+    if (!data || typeof data !== 'object' || !data.type) {
+        return connection.close(4004, 'Structure invalide.');
+    }
+
+    switch (data.type) {
+        case 'move':
+            if (typeof data.x !== 'number' || typeof data.y !== 'number') {
+                return connection.close(4005, 'Coordonnées invalides.');
+            }
+
+            if (data.x < 0 || data.x > 999 || data.y < 0 || data.y > 999) {
+                return connection.close(4006, 'Coordonnées hors limite.');
+            }
+
+            // Traitement du mouvement ici
+            break;
+
+        case 'chat':
+            if (typeof data.message !== 'string' || data.message.length > 200) {
+                return connection.close(4007, 'Message trop long ou invalide.');
+            }
+
+            // Traitement du chat ici
+            break;
+
+        default:
+            return connection.close(4008, 'Type de message inconnu.');
+    }
 }
 
 function main(config) {
@@ -56,6 +89,34 @@ function main(config) {
             connection.close(4001, 'Trop de connexions. Réessaie plus tard.');
             return;
         }
+
+        // 🔐 Anti-flood messages WebSocket
+        connection.on('message', (message) => {
+            const now = Date.now();
+
+            if (!messageHistory.has(ip)) {
+                messageHistory.set(ip, []);
+            }
+
+            const recentMessages = messageHistory.get(ip).filter(t => now - t < 60 * 1000);
+            messageHistory.set(ip, recentMessages);
+
+            if (recentMessages.length >= maxMessagesPerMinute) {
+                console.warn(`📛 IP ${ip} envoyait trop de messages, coupure.`);
+                connection.close(4002, 'Trop de messages envoyés.');
+                return;
+            }
+
+            messageHistory.get(ip).push(now);
+
+            try {
+                const parsed = JSON.parse(message);
+                handleIncomingMessage(parsed, connection);
+            } catch (err) {
+                console.warn(`⚠️ Message invalide reçu de ${ip} : ${message}`);
+                connection.close(4003, 'Message non conforme.');
+            }
+        });
 
         let world;
         const connect = () => {
@@ -139,3 +200,4 @@ getConfigFile(configPath, function (config) {
         console.error(`Failed to load configuration from ${configPath}`);
     }
 });
+
