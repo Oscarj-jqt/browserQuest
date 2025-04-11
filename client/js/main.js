@@ -1,7 +1,28 @@
 const path = require('path');
-const Map = require('./map');
+// const Map = require('./map');
 const mapPath = path.join(__dirname, '../maps/world_server.json');
-const mapInstance = new Map(mapPath);
+// const mapInstance = new Map(mapPath);
+let socket = new WebSocket("ws://localhost:8080");
+
+socket.addEventListener('open', () => {
+    console.log("Test de latence...");
+    setInterval(() => {
+        const timestamp = Date.now();
+        socket.send(JSON.stringify({
+            type: "ping",
+            timestamp: timestamp
+        }));
+    }, 5000); 
+});
+
+socket.addEventListener('message', (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.type === "pong") {
+        const latency = Date.now() - data.timestamp;
+        console.log(`Latence WebSocket : ${latency} ms`);
+    }
+});
 
 define(['jquery', 'app'], function($, App) {
     var app, game;

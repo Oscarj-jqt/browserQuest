@@ -4,13 +4,25 @@
     "private": false,
     "dependencies": {
         "axios": "^1.8.4",
-        "bison": ">0",
-        "express": ">0",
-        "log": ">0",
+        "bison": "latest",
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
+        "http": "^0.0.1-security",
+        "http-proxy": "^1.18.1",
+        "http-server": "^14.1.1",
+        "log": "latest",
         "memcache": "0.3.0",
+        "path": "^0.12.7",
+        "requirejs": "^2.3.7",
         "sanitizer": "0.1.2",
-        "socket.io": ">0",
-        "underscore": ">0",
+        "socket.io": "latest",
+        "underscore": "latest",
         "yargs": "^17.7.2"
     }
 }
+
+
+
+
+
+
