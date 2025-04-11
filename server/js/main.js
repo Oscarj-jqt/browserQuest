@@ -4,7 +4,10 @@ var config = require('../config.json');
 var fs = require('fs'),
     Metrics = require('./metrics');
 const WebSocket = require('ws');  
+const util = require('util');
+const readFile = util.promisify(fs.readFile);
 const path = require('path');
+const configPath = path.resolve(__dirname, '../config.json');
 
 function main(config) {
     var WorldServer = require("./worldserver"),
@@ -116,8 +119,6 @@ function getConfigFile(path, callback) {
     });
 }
 
-var configPath = './server/config.json';
-
     const argv = yargs
     .option('port', {
         alias: 'p',
@@ -148,27 +149,25 @@ function findAvailablePort(start = 8000, end = 8004) {
 }
 
 
-getConfigFile(configPath, function (configPath) {
-    getConfigFile(configPath, async function (localConfig) {
-        let configToUse = defaultConfig || localConfig;
+getConfigFile(configPath, async function (localConfig) {
+    let configToUse = localConfig;
 
-        if (!configToUse) {
-            console.error("Server cannot start without any configuration file.");
+    if (!configToUse) {
+        console.error("Server cannot start without any configuration file.");
+        process.exit(1);
+    }
+
+    if (argv.port) {
+        configToUse.port = argv.port;
+        main(configToUse);
+    } else {
+        const availablePort = await findAvailablePort(8000, 8004);
+        if (!availablePort) {
+            console.error("Aucun port disponible entre 8000 et 8004.");
             process.exit(1);
         }
-
-        if (argv.port) {
-            configToUse.port = argv.port;
-            main(configToUse);
-        } else {
-            const availablePort = await findAvailablePort(8000, 8004);
-            if (!availablePort) {
-                console.error("Aucun port disponible entre 8000 et 8004.");
-                process.exit(1);
-            }
-            configToUse.port = availablePort;
-            console.log(`Port disponible détecté : ${availablePort}`);
-            main(configToUse);
-        }
-    });
+        configToUse.port = availablePort;
+        console.log(`Port disponible détecté : ${availablePort}`);
+        main(configToUse);
+    }
 });

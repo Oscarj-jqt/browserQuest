@@ -7,6 +7,7 @@
         "bison": "latest",
         "cors": "^2.8.5",
         "express": "^5.1.0",
+        "fs": "^0.0.1-security",
         "http": "^0.0.1-security",
         "http-proxy": "^1.18.1",
         "http-server": "^14.1.1",
@@ -17,12 +18,8 @@
         "sanitizer": "0.1.2",
         "socket.io": "latest",
         "underscore": "latest",
+        "util": "^0.12.5",
+        "ws": "^8.18.1",
         "yargs": "^17.7.2"
     }
 }
-
-
-
-
-
-
