@@ -6,10 +6,20 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: browserquest
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     volumes:
       - .:/app
-      - /app/node_modules
     environment:
       - NODE_ENV=production
+
+  nginx:
+    image: nginx:stable
+    container_name: browserquest-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./client:/usr/share/nginx/html  # On monte le dossier client ici
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf  # NGINX utilise ton fichier de conf
+    depends_on:
+      - browserquest-server
