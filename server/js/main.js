@@ -1,25 +1,45 @@
-var fs = require('fs'),
-    Metrics = require('./metrics');
-const WebSocket = require('ws');  // Importation correcte de WebSocket
+const fs = require('fs');
+const WebSocket = require('ws');
+const Metrics = require('./metrics');
+const _ = require('underscore');
+
+// 🔐 Antiflood : suivi des connexions
+const connectionAttempts = new Map();
+
+function isRateLimited(ip) {
+    const now = Date.now();
+    if (!connectionAttempts.has(ip)) {
+        connectionAttempts.set(ip, []);
+    }
+
+    const recentAttempts = connectionAttempts.get(ip).filter(t => now - t < 15 * 60 * 1000);
+    connectionAttempts.set(ip, recentAttempts);
+
+    if (recentAttempts.length >= 100) {
+        return true;
+    }
+
+    connectionAttempts.get(ip).push(now);
+    return false;
+}
 
 function main(config) {
-    var WorldServer = require("./worldserver"),
-        _ = require('underscore'),
-        server = new WebSocket.Server({ port: config.port }),  // Utilisation de WebSocket.Server
-        metrics = config.metrics_enabled ? new Metrics(config) : null,
-        worlds = [],
-        lastTotalPlayers = 0;
+    const WorldServer = require("./worldserver");
+    const Player = require("./player");
 
-    // Utilisation de console pour les messages de log
-    console.info("Starting BrowserQuest game server...");
+    const server = new WebSocket.Server({ port: config.port });
+    const metrics = config.metrics_enabled ? new Metrics(config) : null;
+    const worlds = [];
+    let lastTotalPlayers = 0;
 
-    // Mise à jour de la population des mondes
-    var checkPopulationInterval = setInterval(function () {
+    console.info("🚀 Starting BrowserQuest game server on port " + config.port + "...");
+
+    const checkPopulationInterval = setInterval(() => {
         if (metrics && metrics.isReady) {
-            metrics.getTotalPlayers(function (totalPlayers) {
+            metrics.getTotalPlayers((totalPlayers) => {
                 if (totalPlayers !== lastTotalPlayers) {
                     lastTotalPlayers = totalPlayers;
-                    _.each(worlds, function (world) {
+                    worlds.forEach(world => {
                         world.updatePopulation(totalPlayers);
                     });
                 }
@@ -27,50 +47,53 @@ function main(config) {
         }
     }, 1000);
 
-    // Correction ici : utilisation de 'connection' au lieu de 'onConnect'
-    server.on('connection', function (connection) {
-        var world, // Le monde dans lequel le joueur sera placé
-            connect = function () {
-                if (world) {
-                    world.connect_callback(new Player(connection, world));
-                }
-            };
+    server.on('connection', function (connection, req) {
+        const ip = req.socket.remoteAddress;
+        console.log(`[${new Date().toISOString()}] ➕ Connexion depuis ${ip}`);
+
+        if (isRateLimited(ip)) {
+            console.warn(`⛔ IP ${ip} bloquée pour flood de connexions.`);
+            connection.close(4001, 'Trop de connexions. Réessaie plus tard.');
+            return;
+        }
+
+        let world;
+        const connect = () => {
+            if (world) {
+                world.connect_callback(new Player(connection, world));
+            }
+        };
 
         if (metrics) {
-            metrics.getOpenWorldCount(function (open_world_count) {
-                // Choisir le monde le moins peuplé parmi les mondes ouverts
-                world = _.min(_.first(worlds, open_world_count), function (w) {
-                    return w.playerCount;
-                });
+            metrics.getOpenWorldCount((open_world_count) => {
+                world = _.min(_.first(worlds, open_world_count), w => w.playerCount);
                 connect();
             });
         } else {
-            // Remplir chaque monde séquentiellement jusqu'à ce qu'il soit plein
-            world = _.detect(worlds, function (world) {
-                return world.playerCount < config.nb_players_per_world;
-            });
+            world = _.detect(worlds, world => world.playerCount < config.nb_players_per_world);
             world.updatePopulation();
             connect();
         }
     });
 
     server.on('error', function () {
-        console.error("Error: " + Array.prototype.join.call(arguments, ", "));
+        console.error("❌ Error: " + Array.prototype.join.call(arguments, ", "));
     });
 
-    var onPopulationChange = function () {
+    const onPopulationChange = function () {
         metrics.updatePlayerCounters(worlds, function (totalPlayers) {
-            _.each(worlds, function (world) {
+            worlds.forEach(world => {
                 world.updatePopulation(totalPlayers);
             });
         });
         metrics.updateWorldDistribution(getWorldDistribution(worlds));
     };
 
-    _.each(_.range(config.nb_worlds), function (i) {
-        var world = new WorldServer('world' + (i + 1), config.nb_players_per_world, server);
+    _.range(config.nb_worlds).forEach(i => {
+        const world = new WorldServer('world' + (i + 1), config.nb_players_per_world, server);
         world.run(config.map_filepath);
         worlds.push(world);
+
         if (metrics) {
             world.onPlayerAdded(onPopulationChange);
             world.onPlayerRemoved(onPopulationChange);
@@ -82,27 +105,22 @@ function main(config) {
     });
 
     if (config.metrics_enabled) {
-        metrics.ready(function () {
-            onPopulationChange(); // Initialiser tous les compteurs à 0 au démarrage du serveur
+        metrics.ready(() => {
+            onPopulationChange(); // Init counters
         });
     }
 
     process.on('uncaughtException', function (e) {
-        console.error('uncaughtException: ' + e);
+        console.error('⚠️ uncaughtException:', e);
     });
 }
 
 function getWorldDistribution(worlds) {
-    var distribution = [];
-
-    _.each(worlds, function (world) {
-        distribution.push(world.playerCount);
-    });
-    return distribution;
+    return worlds.map(world => world.playerCount);
 }
 
 function getConfigFile(path, callback) {
-    fs.readFile(path, 'utf8', function (err, json_string) {
+    fs.readFile(path, 'utf8', (err, json_string) => {
         if (err) {
             console.error("Could not open config file:", err.path);
             callback(null);
@@ -112,20 +130,12 @@ function getConfigFile(path, callback) {
     });
 }
 
-var configPaths = ['./server/config.json'];
-
-configPaths.forEach(function (configPath) {
-    getConfigFile(configPath, function (config) {
-        if (config) {
-            main(config);
-        } else {
-            console.error(`Failed to load configuration from ${configPath}`);
-        }
-
-        if (argv.port) {
-            configToUse.port = argv.port;
-        }
-
-        main(configToUse);
-    });
+// 📦 Charger la config et démarrer
+const configPath = './server/config.json';
+getConfigFile(configPath, function (config) {
+    if (config) {
+        main(config);
+    } else {
+        console.error(`Failed to load configuration from ${configPath}`);
+    }
 });
