@@ -3,12 +3,13 @@ const net = require('net');
 var config = require('../config.json');
 var fs = require('fs'),
     Metrics = require('./metrics');
-const WebSocket = require('ws');  // Importation correcte de WebSocket
+const WebSocket = require('ws');  
+const path = require('path');
 
 function main(config) {
     var WorldServer = require("./worldserver"),
         _ = require('underscore'),
-        server = new WebSocket.Server({ port: config.port }),  // Utilisation de WebSocket.Server
+        server = new WebSocket.Server({ port: config.port }), 
         metrics = config.metrics_enabled ? new Metrics(config) : null,
         worlds = [],
         lastTotalPlayers = 0;
@@ -115,7 +116,7 @@ function getConfigFile(path, callback) {
     });
 }
 
-var configPaths = ['./server/config.json'];
+var configPath = './server/config.json';
 
     const argv = yargs
     .option('port', {
@@ -147,8 +148,8 @@ function findAvailablePort(start = 8000, end = 8004) {
 }
 
 
-getConfigFile(defaultConfigPath, function (defaultConfig) {
-    getConfigFile(customConfigPath, async function (localConfig) {
+getConfigFile(configPath, function (configPath) {
+    getConfigFile(configPath, async function (localConfig) {
         let configToUse = defaultConfig || localConfig;
 
         if (!configToUse) {
