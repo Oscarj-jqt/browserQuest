@@ -1,4 +1,5 @@
 var yargs = require('yargs');
+const net = require('net');
 var config = require('../config.json');
 var fs = require('fs'),
     Metrics = require('./metrics');
@@ -136,8 +137,25 @@ if (argv._.includes('--port') || argv._.includes('-p')) {
     process.exit(1);
 }
 
+function findAvailablePort(start = 8000, end = 8004) {
+    return new Promise((resolve) => {
+        const tryPort = (port) => {
+            if (port > end) return resolve(null);
+
+            const server = net.createServer();
+            server.once('error', () => tryPort(port + 1));
+            server.once('listening', () => {
+                server.close(() => resolve(port));
+            });
+            server.listen(port, 'localhost');
+        };
+        tryPort(start);
+    });
+}
+
+
 getConfigFile(defaultConfigPath, function (defaultConfig) {
-    getConfigFile(customConfigPath, function (localConfig) {
+    getConfigFile(customConfigPath, async function (localConfig) {
         let configToUse = defaultConfig || localConfig;
 
         if (!configToUse) {
@@ -147,8 +165,16 @@ getConfigFile(defaultConfigPath, function (defaultConfig) {
 
         if (argv.port) {
             configToUse.port = argv.port;
+            main(configToUse);
+        } else {
+            const availablePort = await findAvailablePort(8000, 8004);
+            if (!availablePort) {
+                console.error("Aucun port disponible entre 8000 et 8004.");
+                process.exit(1);
+            }
+            configToUse.port = availablePort;
+            console.log(`Port disponible détecté : ${availablePort}`);
+            main(configToUse);
         }
-
-        main(configToUse);
     });
 });

@@ -2,6 +2,7 @@ const path = require('path');
 const Map = require('./map');
 const mapPath = path.join(__dirname, '../maps/world_server.json');
 const mapInstance = new Map(mapPath);
+let socket = new WebSocket("ws://localhost:8080");
 
 define(['jquery', 'app'], function($, App) {
     var app, game;
