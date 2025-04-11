@@ -10,12 +10,25 @@ module.exports = Themap = cls.Class.extend({
     	var self = this;
     
     	this.isLoaded = false;
+<<<<<<< HEAD:server/js/themap.js
     
     	if( fs.lstatSync(filepath).isFile() ) {
      
+=======
+        fs.access(filepath, fs.constants.F_OK, function(err) {
+            if (err) {
+                console.error(filepath + " doesn't exist.");
+                return;
+            }
+        
+>>>>>>> alexis:server/js/map.js
             fs.readFile(filepath, function(err, file) {
+                if (err) {
+                    console.error("Error reading file:", err);
+                    return;
+                }
+        
                 var json = JSON.parse(file.toString());
-            
                 self.initMap(json);
             });
         }
