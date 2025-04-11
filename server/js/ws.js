@@ -171,9 +171,27 @@ WS.socketIOConnection = Connection.extend({
 
         connection.on("message", function (message) {
             console.log("Received: " + message)
+        
+            let data;
+            try {
+                data = JSON.parse(message);
+            } catch (e) {
+                console.error("Message non JSON : ", message);
+                return;
+            }
+        
+            if (data.type === "ping" && data.timestamp) {
+                connection.emit("message", JSON.stringify({
+                    type: "pong",
+                    timestamp: data.timestamp
+                }));
+                return;
+            }
+        
             if (self.listen_callback)
-                self.listen_callback(message)
+                self.listen_callback(message);
         });
+        
 
         connection.on("disconnect", function () {
             if(self.close_callback) {
