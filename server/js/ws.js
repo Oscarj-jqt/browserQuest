@@ -414,8 +414,4 @@ WS.miksagoWebSocketConnection = Connection.extend({
         this._connection.send(data);
     }
 });
-<<<<<<< HEAD
 */
-=======
-*/
->>>>>>> alexis
