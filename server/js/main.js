@@ -1,14 +1,15 @@
-
+var yargs = require('yargs');
+var config = require('../config.json');
 var fs = require('fs'),
     Metrics = require('./metrics');
-
+ 
 
 function main(config) {
     var ws = require("./ws"),
         WorldServer = require("./worldserver"),
         Log = require('log'),
         _ = require('underscore'),
-        server = new ws.MultiVersionWebsocketServer(config.port),
+        server = new ws.socketIOServer(config.host, config.port),
         metrics = config.metrics_enabled ? new Metrics(config) : null;
         worlds = [],
         lastTotalPlayers = 0,
@@ -27,14 +28,14 @@ function main(config) {
     
     switch(config.debug_level) {
         case "error":
-            log = new Log(Log.ERROR); break;
+            log = new Log(console.log); break;
         case "debug":
-            log = new Log(Log.DEBUG); break;
+            log = new Log(console.log); break;
         case "info":
-            log = new Log(Log.INFO); break;
+            log = new Log(console.log); break;
     };
     
-    log.info("Starting BrowserQuest game server...");
+    console.log("Starting BrowserQuest game server...");
     
     server.onConnect(function(connection) {
         var world, // the one in which the player will be spawned
@@ -62,7 +63,7 @@ function main(config) {
     });
 
     server.onError(function() {
-        log.error(Array.prototype.join.call(arguments, ", "));
+        console.log(Array.prototype.join.call(arguments, ", "));
     });
     
     var onPopulationChange = function() {
@@ -95,7 +96,7 @@ function main(config) {
     }
     
     process.on('uncaughtException', function (e) {
-        log.error('uncaughtException: ' + e);
+        console.log('uncaughtException: ' + e);
     });
 }
 
@@ -122,21 +123,32 @@ function getConfigFile(path, callback) {
 var defaultConfigPath = './server/config.json',
     customConfigPath = './server/config_local.json';
 
-process.argv.forEach(function (val, index, array) {
-    if(index === 2) {
-        customConfigPath = val;
-    }
-});
+    const argv = yargs
+    .option('port', {
+        alias: 'p',
+        description: 'Port sur lequel écouter',
+        type: 'number'
+    })
+    .argv;
 
-getConfigFile(defaultConfigPath, function(defaultConfig) {
-    getConfigFile(customConfigPath, function(localConfig) {
-        if(localConfig) {
-            main(localConfig);
-        } else if(defaultConfig) {
-            main(defaultConfig);
-        } else {
+if (argv._.includes('--port') || argv._.includes('-p')) {
+    console.log("Le paramètre '--port' est un argument de configuration, pas un fichier.");
+    process.exit(1);
+}
+
+getConfigFile(defaultConfigPath, function (defaultConfig) {
+    getConfigFile(customConfigPath, function (localConfig) {
+        let configToUse = defaultConfig || localConfig;
+
+        if (!configToUse) {
             console.error("Server cannot start without any configuration file.");
             process.exit(1);
         }
+
+        if (argv.port) {
+            configToUse.port = argv.port;
+        }
+
+        main(configToUse);
     });
 });
