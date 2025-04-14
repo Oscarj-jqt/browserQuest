@@ -1,8 +1,23 @@
 // const Map = require('./map');
 // const mapInstance = new Map(mapPath);
-let socket = new WebSocket("ws://localhost/socket.io");
+// const express = require('express');
+// const http = require('http');
+// const socketIo = require('socket.io');
+// const app = express();
+// const server = http.createServer(app);
+// const io = socketIo(server);
+let socket = new WebSocket("ws://localhost:8000");
 
+// io.on('connection', (socket) => {
+//     console.log('A user connected');
+//     socket.on('disconnect', () => {
+//         console.log('User disconnected');
+//     });
+// });
 
+// server.listen(8000, () => {
+//     console.log('Server running on http://localhost:8000');
+// });
 
 socket.onopen = function() {
     console.log("WebSocket connection established.");

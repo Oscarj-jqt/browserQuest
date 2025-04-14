@@ -18,8 +18,10 @@
         "requirejs": "^2.3.7",
         "sanitizer": "0.1.2",
         "socket.io": "latest",
+        "socket.io-client": "^4.8.1",
         "underscore": "latest",
         "util": "^0.12.5",
+        "websocket": "^1.0.35",
         "ws": "^8.18.1",
         "yargs": "^17.7.2"
     }
