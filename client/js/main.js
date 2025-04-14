@@ -1,8 +1,12 @@
-const path = require('path');
 // const Map = require('./map');
-const mapPath = path.join(__dirname, '../maps/world_server.json');
 // const mapInstance = new Map(mapPath);
-let socket = new WebSocket("ws://localhost:8080");
+let socket = new WebSocket("ws://localhost/socket.io");
+
+
+
+socket.onopen = function() {
+    console.log("WebSocket connection established.");
+};
 
 socket.addEventListener('open', () => {
     console.log("Test de latence...");

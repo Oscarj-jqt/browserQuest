@@ -1,5 +1,5 @@
 
-define(['character', 'exceptions'], function(Character, Exceptions) {
+define(['character', 'exceptions', 'shared/js/gametypes'], function(Character, Exceptions, Types) {
 
     var Player = Character.extend({
         MAX_LEVEL: 10,

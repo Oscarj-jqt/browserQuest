@@ -1,5 +1,5 @@
 
-define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory, BISON) {
+define(['player', 'entityfactory', 'lib/bison', 'shared/js/gametypes'], function(Player, EntityFactory, BISON, Types) {
 
     var GameClient = Class.extend({
         init: function(host, port) {

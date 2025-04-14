@@ -2,8 +2,7 @@
 var cls = require("./lib/class"),
     _ = require("underscore"),
     Messages = require("./message"),
-    Properties = require("./properties"),
-    Types = require("../../shared/js/gametypes");
+    Properties = require("./properties");
 
 module.exports = Mob = Character.extend({
     init: function(id, kind, x, y) {

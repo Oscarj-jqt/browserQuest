@@ -1,5 +1,5 @@
 
-define(['item'], function(Item) {
+define(['item', 'shared/js/gametypes'], function(Item, Types) {
     
     var Items = {
         

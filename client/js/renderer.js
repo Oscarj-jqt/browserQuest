@@ -1,6 +1,6 @@
 
-define(['camera', 'item', 'character', 'player', 'timer'], 
-function(Camera, Item, Character, Player, Timer) {
+define(['camera', 'item', 'character', 'player', 'timer', 'shared/js/gametypes'], 
+function(Camera, Item, Character, Player, Timer, Types) {
 
     var Renderer = Class.extend({
         init: function(game, canvas, background, foreground) {

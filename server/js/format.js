@@ -1,7 +1,5 @@
-
 var _ = require('underscore'),
-    Types = require("../../shared/js/gametypes");
-
+    Types = require("../../client/js/shared/js/gametypes");
 (function() {
     FormatChecker = Class.extend({
         init: function() {

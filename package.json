@@ -11,6 +11,7 @@
         "http": "^0.0.1-security",
         "http-proxy": "^1.18.1",
         "http-server": "^14.1.1",
+        "jquery": "^3.7.1",
         "log": "latest",
         "memcache": "0.3.0",
         "path": "^0.12.7",

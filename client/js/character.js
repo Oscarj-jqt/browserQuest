@@ -1,5 +1,5 @@
 
-define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
+define(['entity', 'transition', 'timer','shared/js/gametypes'], function(Entity, Transition, Timer, Types) {
 
     var Character = Entity.extend({
         init: function(id, kind) {

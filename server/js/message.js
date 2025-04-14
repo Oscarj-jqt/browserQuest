@@ -1,8 +1,7 @@
-
 var cls = require("./lib/class"),
     _ = require("underscore"),
-    Utils = require("./utils"),
-    Types = require("../../shared/js/gametypes");
+    Utils = require("./utils")
+    Types = require("../../client/js/shared/js/gametypes");
 
 var Messages = {};
 module.exports = Messages;

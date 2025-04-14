@@ -1,5 +1,5 @@
 
-define(['jquery', 'area'], function($, Area) {
+define(['jquery', 'area', 'shared/js/gametypes'], function($, Area, Types) {
     
     var Map = Class.extend({
         init: function(loadMultiTilesheets, game) {

@@ -1,5 +1,5 @@
 
-define(['npc'], function(Npc) {
+define(['npc', 'shared/js/gametypes'], function(Npc, Types) {
 
     var NPCs = {
 

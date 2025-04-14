@@ -1,5 +1,5 @@
 
-define(['character'], function(Character) {
+define(['character', 'shared/js/gametypes'], function(Character, Types) {
 
     var NpcTalk = {
         "guard": [

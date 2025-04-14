@@ -1,4 +1,3 @@
-
 var cls = require("./lib/class"),
     _ = require("underscore"),
     Messages = require("./message"),
@@ -6,7 +5,7 @@ var cls = require("./lib/class"),
     Properties = require("./properties"),
     Formulas = require("./formulas"),
     check = require("./format").check,
-    Types = require("../../shared/js/gametypes");
+    Types = require("../../client/js/shared/js/gametypes");
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {

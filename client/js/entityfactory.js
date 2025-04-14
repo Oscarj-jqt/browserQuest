@@ -1,5 +1,5 @@
-
-define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs, Warrior, Chest) {
+define(['./shared/js/gametypes','mobs', 'items', 'npcs', 'warrior', 'chest'],
+    function(Types, Mobs, Items, NPCs, Warrior, Chest) {
 
     var EntityFactory = {};
 

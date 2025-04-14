@@ -1,5 +1,5 @@
 
-define(['player'], function(Player) {
+define(['player', 'shared/js/gametypes'], function(Player, Types) {
     
     var Warrior = Player.extend({
         init: function(id, name) {

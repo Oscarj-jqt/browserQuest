@@ -1,5 +1,4 @@
-
-var Types = require("../../shared/js/gametypes");
+var Types = require("../../client/js/shared/js/gametypes");
 
 var Properties = {
     rat: {

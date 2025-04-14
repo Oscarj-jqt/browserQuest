@@ -1,5 +1,5 @@
 
-define(['character', 'timer'], function(Character, Timer) {
+define(['shared/js/gametypes','character', 'timer'], function(Types, Character, Timer) {
 
     var Updater = Class.extend({
         init: function(game) {

@@ -1,5 +1,5 @@
 
-define(function() {
+define(['shared/js/gametypes'],function(Types) {
 
     var Entity = Class.extend({
         init: function(id, kind) {

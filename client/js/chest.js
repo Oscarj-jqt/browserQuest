@@ -1,5 +1,5 @@
 
-define(['entity'], function(Entity) {
+define(['entity','shared/js/gametypes'], function(Entity, Types) {
 
     var Chest = Entity.extend({
         init: function(id, kind) {

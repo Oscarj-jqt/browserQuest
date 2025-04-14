@@ -1,5 +1,5 @@
 
-define(['mob', 'timer'], function(Mob, Timer) {
+define(['mob', 'timer', 'shared/js/gametypes'], function(Mob, Timer, Types) {
 
     var Mobs = {
         Rat: Mob.extend({
