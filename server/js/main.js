@@ -1,4 +1,5 @@
 var yargs = require('yargs');
+const Log = require('log');
 const net = require('net');
 var config = require('../config.json');
 var fs = require('fs'),
@@ -10,18 +11,14 @@ const path = require('path');
 const configPath = path.resolve(__dirname, '../config.json');
 
 function main(config) {
-    var WorldServer = require("./worldserver"),
-        _ = require('underscore'),
-        server = new WebSocket.Server({ port: config.port }), 
+    const ws = require("./ws"),
+          WorldServer = require("./worldserver"),
+          server = new ws.socketIOServer(config.host, config.port),
         metrics = config.metrics_enabled ? new Metrics(config) : null,
         worlds = [],
         lastTotalPlayers = 0;
 
-    // Utilisation de console pour les messages de log
-    console.info("Starting BrowserQuest game server...");
-
-    // Mise à jour de la population des mondes
-    var checkPopulationInterval = setInterval(function () {
+    const checkPopulationInterval = setInterval(function () {
         if (metrics && metrics.isReady) {
             metrics.getTotalPlayers(function (totalPlayers) {
                 if (totalPlayers !== lastTotalPlayers) {
@@ -34,36 +31,37 @@ function main(config) {
         }
     }, 1000);
 
-    // Correction ici : utilisation de 'connection' au lieu de 'onConnect'
-    server.on('connection', function (connection) {
-        var world, // Le monde dans lequel le joueur sera placé
-            connect = function () {
-                if (world) {
-                    world.connect_callback(new Player(connection, world));
-                }
-            };
+    const log = new Log(console.log);
+
+    console.log("Starting BrowserQuest game server...");
+
+    server.onConnect(function(connection) {
+        let world;
+        
+        const connect = () => {
+            if (world) {
+                world.connect_callback(new Player(connection, world));
+            }
+        };
 
         if (metrics) {
-            metrics.getOpenWorldCount(function (open_world_count) {
-                // Choisir le monde le moins peuplé parmi les mondes ouverts
-                world = _.min(_.first(worlds, open_world_count), function (w) {
-                    return w.playerCount;
-                });
+            metrics.getOpenWorldCount(async (open_world_count) => {
+                // Choose the least populated world among open worlds
+                world = _.min(_.first(worlds, open_world_count), (w) => w.playerCount);
                 connect();
             });
         } else {
-            // Remplir chaque monde séquentiellement jusqu'à ce qu'il soit plein
-            world = _.detect(worlds, function (world) {
-                return world.playerCount < config.nb_players_per_world;
-            });
+            // Fill each world sequentially until they are full
+            world = _.find(worlds, (world) => world.playerCount < config.nb_players_per_world);
             world.updatePopulation();
             connect();
         }
     });
 
-    server.on('error', function () {
-        console.error("Error: " + Array.prototype.join.call(arguments, ", "));
+    server.onError(function() {
+        console.log(Array.prototype.join.call(arguments, ", "));
     });
+  
 
     var onPopulationChange = function () {
         metrics.updatePlayerCounters(worlds, function (totalPlayers) {
@@ -84,13 +82,13 @@ function main(config) {
         }
     });
 
-    server.on('requestStatus', function () {
-        return JSON.stringify(getWorldDistribution(worlds));
-    });
+    // server.on('requestStatus', function () {
+    //     return JSON.stringify(getWorldDistribution(worlds));
+    // });
 
     if (config.metrics_enabled) {
         metrics.ready(function () {
-            onPopulationChange(); // Initialiser tous les compteurs à 0 au démarrage du serveur
+            onPopulationChange();
         });
     }
 
@@ -171,3 +169,4 @@ getConfigFile(configPath, async function (localConfig) {
         main(configToUse);
     }
 });
+

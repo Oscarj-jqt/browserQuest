@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY package*.json ./
 
+COPY server/maps/world_server.json /app/server/maps/world_server.json
+
 RUN npm install
 
 COPY . .

@@ -1,47 +1,18 @@
 // const Map = require('./map');
 // const mapInstance = new Map(mapPath);
-// const express = require('express');
-// const http = require('http');
-// const socketIo = require('socket.io');
-// const app = express();
-// const server = http.createServer(app);
-// const io = socketIo(server);
-let socket = new WebSocket("ws://localhost:8000");
 
-// io.on('connection', (socket) => {
-//     console.log('A user connected');
-//     socket.on('disconnect', () => {
-//         console.log('User disconnected');
-//     });
+// const socket = io();
+
+// socket.on('connect', () => {
+//     console.log("Connexion établie avec Socket.IO");
+//     socket.emit('ping', { timestamp: Date.now() });
 // });
 
-// server.listen(8000, () => {
-//     console.log('Server running on http://localhost:8000');
+
+// socket.on('pong', (data) => {
+//     const latency = Date.now() - data.timestamp;
+//     console.log(`Latence Socket.IO : ${latency} ms`);
 // });
-
-socket.onopen = function() {
-    console.log("WebSocket connection established.");
-};
-
-socket.addEventListener('open', () => {
-    console.log("Test de latence...");
-    setInterval(() => {
-        const timestamp = Date.now();
-        socket.send(JSON.stringify({
-            type: "ping",
-            timestamp: timestamp
-        }));
-    }, 5000); 
-});
-
-socket.addEventListener('message', (event) => {
-    const data = JSON.parse(event.data);
-
-    if (data.type === "pong") {
-        const latency = Date.now() - data.timestamp;
-        console.log(`Latence WebSocket : ${latency} ms`);
-    }
-});
 
 define(['jquery', 'app'], function($, App) {
     var app, game;

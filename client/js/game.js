@@ -3,7 +3,7 @@ define(['./shared/js/gametypes', 'infomanager', 'bubble', 'renderer', 'map', 'an
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config'],
 function(Types, InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Types) {
+         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config) {
     
     var Game = Class.extend({
         init: function(app) {
