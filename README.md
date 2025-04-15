@@ -11,20 +11,22 @@ TODO
   * Quest system and more awesome features
  
 
-HOW TO RUN?
+Installation et configuration
 ============
 
-```
+```bash
+git clone https://github.com/Oscarj-jqt/browserQuest
+cd browserquest
 npm install
-node server/js/main.js
+
 ```
 
-Then go inside the Client folder and open index.html.
+Lancer l'application avec Docker
+============
 
-You might want to host a webserver and open index.html in that (e.g. 127.0.0.1/index.html).
-
-
-Documentation is located in client and server directories.
+```bash
+docker-compose up --build
+```
 
 
 Developers
