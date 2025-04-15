@@ -26,7 +26,6 @@ Lancer l'application avec Docker
 
 ```bash
 docker-compose up --build
-npx http-server ./client
 ```
 
 
